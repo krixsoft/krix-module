@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-type DoneFunction = (error?: any)=> void;
+type DoneFunction = (error?: any) => void;
 
 export class DoneAfterTickManager {
   private doneFunction: DoneFunction;
