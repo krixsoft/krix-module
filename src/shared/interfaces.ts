@@ -8,11 +8,11 @@ export interface ClassDependency extends Function {
   new (...args: any[]): any;
 }
 
-export interface FactoryDependencyClass extends ClassDependency {
+export abstract class FactoryDependencyClass {
   /**
    * Function which will be called to create a some dependency.
    */
-  build: () => any;
+  abstract build (): any;
 }
 
 export type DependencyKey = string | symbol | ClassDependency;
@@ -86,7 +86,7 @@ export interface UseFactoryClassDependency extends Base {
    *
    * FYI: External code can't get an access to factory class.
    */
-  useFactoryClass: FactoryDependencyClass;
+  useFactoryClass: new (...args: any[]) => FactoryDependencyClass;
   /**
    * If `false` - every `get` of this dependency will call `build` method of `useFactory` class.
    *
