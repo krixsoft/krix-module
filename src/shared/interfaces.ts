@@ -155,8 +155,8 @@ export interface ModuleConfig {
 
 
 export interface ExternalDependency {
-  key: DependencyKey;
-  value: Dependency;
+  dependencyKey: DependencyKey;
+  value: any;
 }
 
 export interface DependencyClassProperty {

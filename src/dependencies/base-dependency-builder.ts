@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import { DependencyBuilderStorage as DependencyBuilderStorage } from '../dependency-builder.storage';
+import { DependencyBuilderStorage } from '../dependency-builder.storage';
+import { Interfaces } from '../shared';
 
 export abstract class BaseDependencyBuilder {
   protected dependencyIsSingleton: boolean;
@@ -23,9 +24,11 @@ export abstract class BaseDependencyBuilder {
    * Creates a new instance of the dependency.
    *
    * @abstract
+   * @param  {Interfaces.ExternalDependency[]} [extDeps]
    * @return {any}
    */
   abstract create (
+    extDeps?: Interfaces.ExternalDependency[],
   ): any;
 
   /**

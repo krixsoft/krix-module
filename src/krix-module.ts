@@ -103,7 +103,7 @@ export class KxModule {
     extDeps?: Interfaces.ExternalDependency[],
   ): Promise<TDependency> {
     const dependencyBuilder = this.moduleDependencyBuilderStorage.getDependencyBuilder(dependencyKey);
-    const dependency = await dependencyBuilder.create();
+    const dependency = await dependencyBuilder.create(extDeps);
     return dependency;
   }
 
