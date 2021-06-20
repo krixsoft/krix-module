@@ -48,7 +48,7 @@ export interface UseClassDependency extends Base {
    *
    * @default true
    */
-  singletone: boolean;
+  singletone?: boolean;
   /**
    * The list of dependencies which will be injected to `useClass` class.
    */
@@ -70,7 +70,7 @@ export interface UseFactoryFunctionDependency extends Base {
    *
    * @default true
    */
-  singletone: boolean;
+  singletone?: boolean;
   /**
    * The list of dependencies which will be injected to `useFactory` function.
    */
@@ -92,7 +92,7 @@ export interface UseFactoryClassDependency extends Base {
    *
    * @default true
    */
-  singletone: boolean;
+  singletone?: boolean;
 }
 
 /**
@@ -116,7 +116,7 @@ export interface DependencyConfig {
    *
    * @default true
    */
-  singletone: boolean;
+  singletone?: boolean;
 }
 
 
