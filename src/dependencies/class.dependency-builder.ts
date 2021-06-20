@@ -22,7 +22,7 @@ export class ClassDependencyBuilder extends BaseDependencyBuilder {
     super();
 
     this.config = Helper.getDependencyConfig(classDependency);
-    this.dependencyIsSingleton = this.config?.singletone === true;
+    this.dependencyIsSingleton = this.config?.singletone !== false;
 
     this.classDescriptor = Helper.getClassDescriptor(classDependency);
   }

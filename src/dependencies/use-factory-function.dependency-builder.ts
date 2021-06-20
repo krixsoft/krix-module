@@ -18,7 +18,7 @@ export class UseFactoryFunctionDependencyBuilder extends BaseDependencyBuilder {
   ) {
     super();
 
-    this.dependencyIsSingleton = useFactoryFunctionDependency?.singletone === true;
+    this.dependencyIsSingleton = useFactoryFunctionDependency?.singletone !== false;
   }
 
   /**

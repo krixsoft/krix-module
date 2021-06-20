@@ -21,7 +21,7 @@ export class UseFactoryClassDependencyBuilder extends BaseDependencyBuilder {
   ) {
     super();
 
-    this.dependencyIsSingleton = useFactoryClassDependency?.singletone === true;
+    this.dependencyIsSingleton = useFactoryClassDependency?.singletone !== false;
 
     // Creates the Class dependency builder for the factory class
     this.factoryClassDependencyBuilder = ClassDependencyBuilder.create(useFactoryClassDependency.useFactoryClass);
