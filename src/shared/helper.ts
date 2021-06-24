@@ -120,4 +120,21 @@ export class Helper {
     const types: any[] = [ String, Boolean, Number, Object ];
     return _.includes(types, type);
   }
+
+  /**
+   * Returns the name of dependency key.
+   *
+   * @param  {any} dependencyKey
+   * @return {string}
+   */
+  static getDependencyName (
+    dependencyKey: any,
+  ): string {
+    if (typeof dependencyKey === 'function' && _.isNil(dependencyKey.constructor) === false) {
+        return dependencyKey.name;
+    }
+
+    return typeof dependencyKey;
+  }
+
 }
