@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import * as _ from 'lodash';
 import 'reflect-metadata';
 
-import { Dependency } from '../dist/decorators';
+import { Dependency, Inject } from '../dist/decorators';
 import { KxModule } from '../dist/krix-module';
 import { Interfaces } from '../dist/shared';
 
@@ -49,20 +49,179 @@ describe(`KxModule`, () => {
     expect(kxModule).to.be.an.instanceOf(KxModule);
   });
 
-  it(`should create an instance of class dependency`, async () => {
-    @Dependency()
-    class DependencyA {
-    }
+  describe(`Class dependency`, () => {
+    it(`should create an instance of Class dependency`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
 
-    const kxModule = KxModule.init({
-      dependencies: [
-        DependencyA,
-      ],
+      const kxModule = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+      });
+
+      const dependencyA = await kxModule.create(DependencyA);
+      expect(dependencyA).to.be.an.instanceOf(DependencyA);
     });
 
-    const dependencyA = await kxModule.create(DependencyA);
-    expect(dependencyA).to.be.an.instanceOf(DependencyA);
+    it(`should create a Class dependency with constructor dependency`, async () => {
+      @Dependency()
+      class SubDependency {
+      }
+      @Dependency()
+      class MainDependency {
+        constructor (
+          public subDependency: SubDependency,
+        ) {}
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          SubDependency,
+          MainDependency,
+        ],
+      });
+
+      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      expect(mainDependency).to.be.an.instanceOf(MainDependency);
+      expect(mainDependency.subDependency).not.to.be.undefined;
+    });
+
+    it(`should create a Class dependency with injected property dependency`, async () => {
+      @Dependency()
+      class SubDependency {
+      }
+      @Dependency()
+      class MainDependency {
+        @Inject(SubDependency)
+        public subDependency: SubDependency;
+        constructor (
+        ) {}
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          SubDependency,
+          MainDependency,
+        ],
+      });
+
+      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      expect(mainDependency).to.be.an.instanceOf(MainDependency);
+      expect(mainDependency.subDependency).not.to.be.undefined;
+    });
+
+    it(`should create a Class dependency with injected constructor dependency`, async () => {
+      abstract class AbstractSubDependency {
+      }
+      @Dependency()
+      class SubDependency {
+      }
+      @Dependency()
+      class MainDependency {
+        constructor (
+          @Inject(SubDependency)
+          public subDependency: AbstractSubDependency,
+        ) {}
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          SubDependency,
+          MainDependency,
+        ],
+      });
+
+      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      expect(mainDependency).to.be.an.instanceOf(MainDependency);
+      expect(mainDependency.subDependency).not.to.be.undefined;
+    });
+
+    it(`should throw an error if dependency in constructor isn't defined`, async () => {
+      @Dependency()
+      class SubDependency {
+      }
+      @Dependency()
+      class MainDependency {
+        constructor (
+          public subDependency: SubDependency,
+        ) {}
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          MainDependency,
+        ],
+      });
+
+      let testError: Error;
+      try {
+        await kxModule.create<MainDependency>(MainDependency);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`Class Dependency. Dependency in constructor not found! Class: "MainDependency". Index: 0. Dependency: "SubDependency".`);
+    });
+
+    it(`should throw an error if dependency in property isn't defined`, async () => {
+      @Dependency()
+      class SubDependency {
+      }
+      @Dependency()
+      class MainDependency {
+        @Inject(SubDependency)
+        public subDependency: SubDependency;
+
+        constructor (
+        ) {}
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          MainDependency,
+        ],
+      });
+
+      let testError: Error;
+      try {
+        await kxModule.create<MainDependency>(MainDependency);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`Class Dependency. Dependency in property not found! Class: "MainDependency". Property: "subDependency". Dependency: "SubDependency".`);
+    });
+
+    it(`should throw an error if dependency in constructor is a primitive`, async () => {
+      let testError: Error;
+      try {
+        @Dependency()
+        class MainDependency {
+          constructor (
+            public subDependency: number,
+          ) {}
+        }
+
+        const kxModule = KxModule.init({
+          dependencies: [
+            MainDependency,
+          ],
+        });
+
+        await kxModule.create<MainDependency>(MainDependency);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`Class Dependency. Constructor doesn't support native types! Class: "MainDependency". Index: 0. Dependency: "string".`);
+    });
   });
+
 
   it(`should get an instance of Class dependency`, async () => {
     @Dependency()
@@ -165,104 +324,135 @@ describe(`KxModule`, () => {
 
   it(`should get 2 the instance of one singleton Class dependency and they must be equal`, async () => {
     @Dependency()
-    class DependencyA {
+    class MainDependency {
     }
 
     const kxModule = KxModule.init({
       dependencies: [
-        DependencyA,
+        MainDependency,
       ],
     });
 
-    const dependencyAGet1 = await kxModule.get(DependencyA);
-    const dependencyAGet2 = await kxModule.get(DependencyA);
-    expect(dependencyAGet1).to.be.equal(dependencyAGet2);
+    const mainDependencyGet1 = await kxModule.get(MainDependency);
+    const mainDependencyGet2 = await kxModule.get(MainDependency);
+    expect(mainDependencyGet1).to.be.equal(mainDependencyGet2);
   });
 
   it(`should get 2 the instance of one non-singleton Class dependency and they mustn't be equal`, async () => {
     @Dependency({ singletone: false })
-    class DependencyA {
+    class MainDependency {
     }
 
     const kxModule = KxModule.init({
       dependencies: [
-        DependencyA,
+        MainDependency,
       ],
     });
 
-    const dependencyAGet1 = await kxModule.get(DependencyA);
-    const dependencyAGet2 = await kxModule.get(DependencyA);
-    expect(dependencyAGet1).not.to.be.equal(dependencyAGet2);
+    const mainDdependencyGet1 = await kxModule.get(MainDependency);
+    const mainDependencyGet2 = await kxModule.get(MainDependency);
+    expect(mainDdependencyGet1).not.to.be.equal(mainDependencyGet2);
   });
 
-  it(`should get B: B->A. Calls: B`, async () => {
+  it(`should: M->S. Get: M. M.S isn't an undefined`, async () => {
     @Dependency()
-    class DependencyA {
+    class SubDependency {
     }
     @Dependency()
-    class DependencyB {
+    class MainDependency {
       constructor (
-        public dependencyA: DependencyA,
+        public subDependency: SubDependency,
       ) {
       }
     }
 
     const kxModule = KxModule.init({
       dependencies: [
-        DependencyA,
-        DependencyB,
+        SubDependency,
+        MainDependency,
       ],
     });
 
-    const dependencyB = await kxModule.get<DependencyB>(DependencyB);
-    expect(dependencyB.dependencyA).not.to.be.undefined;
+    const mainDependency = await kxModule.get<MainDependency>(MainDependency);
+    expect(mainDependency.subDependency).not.to.be.undefined;
   });
 
-  it(`should get B: B->A. Calls: A, B`, async () => {
+  it(`should: M->S. Get: S, M. M.S is equal to S`, async () => {
     @Dependency()
-    class DependencyA {
+    class SubDependency {
     }
     @Dependency()
-    class DependencyB {
+    class MainDependency {
       constructor (
-        public dependencyA: DependencyA,
+        public subDependency: SubDependency,
       ) {
       }
     }
 
     const kxModule = KxModule.init({
       dependencies: [
-        DependencyA,
-        DependencyB,
+        SubDependency,
+        MainDependency,
       ],
     });
 
-    const dependencyA = await kxModule.get<DependencyA>(DependencyA);
-    const dependencyB = await kxModule.get<DependencyB>(DependencyB);
-    expect(dependencyB.dependencyA).to.be.equal(dependencyA);
+    const subDependency = await kxModule.get<SubDependency>(SubDependency);
+    const mainDependency = await kxModule.get<MainDependency>(MainDependency);
+    expect(mainDependency.subDependency).to.be.equal(subDependency);
   });
 
-  it(`should get B: B->A. Calls: B, A.`, async () => {
+  it(`should: M->S. Get: M, S. M.S is equal to S`, async () => {
     @Dependency()
-    class DependencyA {
+    class SubDependency {
     }
     @Dependency()
-    class DependencyB {
+    class MainDependency {
       constructor (
-        public dependencyA: DependencyA,
+        public subDependency: SubDependency,
       ) {
       }
     }
 
     const kxModule = KxModule.init({
       dependencies: [
-        DependencyA,
-        DependencyB,
+        SubDependency,
+        MainDependency,
       ],
     });
 
-    const dependencyB = await kxModule.get<DependencyB>(DependencyB);
-    const dependencyA = await kxModule.get<DependencyA>(DependencyA);
-    expect(dependencyB.dependencyA).to.be.equal(dependencyA);
+    const mainDependency = await kxModule.get<MainDependency>(MainDependency);
+    const subDependency = await kxModule.get<SubDependency>(SubDependency);
+    expect(mainDependency.subDependency).to.be.equal(subDependency);
+  });
+
+  it(`should: M->S1, M->S2. Get: M, S1, S2. M.S1 is equal to S1, M.S2 is equal to S2`, async () => {
+    @Dependency()
+    class SubDependency1 {
+    }
+    @Dependency()
+    class SubDependency2 {
+    }
+    @Dependency()
+    class MainDependency {
+      constructor (
+        public subDependency1: SubDependency1,
+        public subDependency2: SubDependency2,
+      ) {
+      }
+    }
+
+    const kxModule = KxModule.init({
+      dependencies: [
+        SubDependency1,
+        SubDependency2,
+        MainDependency,
+      ],
+    });
+
+    const mainDependency = await kxModule.get<MainDependency>(MainDependency);
+    const subDependency1 = await kxModule.get<SubDependency1>(SubDependency1);
+    const subDependency2 = await kxModule.get<SubDependency2>(SubDependency2);
+    expect(mainDependency.subDependency1).to.be.equal(subDependency1);
+    expect(mainDependency.subDependency2).to.be.equal(subDependency2);
   });
 });
