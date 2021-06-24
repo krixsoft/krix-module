@@ -10,6 +10,7 @@ module.exports = GulpHelper.combineGulpFiles(
 exports = module.exports;
 
 const distFolder = `../dist`;
+const srcFolder = `../src`;
 const specFolder = `../spec`;
 
 /**
@@ -26,12 +27,18 @@ exports[`test:start`] = function test () {
 
 exports[`test:watch`] = gulp.series(
   exports[`build:test`],
+  exports[`build:pkg`],
   exports[`test:start`],
   gulp.parallel(
-    function testBuildWatch () {
+    function buildSpecWatch () {
       return gulp.watch([
         `${specFolder}/**/*.ts`,
       ], gulp.series(exports[`build:test`]));
+    },
+    function buildSrcWatch () {
+      return gulp.watch([
+        `${srcFolder}/**/*.ts`,
+      ], gulp.series(exports[`build:pkg`]));
     },
     function testStartWatch () {
       return gulp.watch([

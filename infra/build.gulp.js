@@ -28,11 +28,8 @@ function buildTSForlder (sourceFolder) {
 }
 
 exports[`build:test`] = gulp.series(
-  exports[`eslint`],
   exports[`clear:test`],
-  buildTSForlder(`../src`),
   buildTSForlder(`../spec`),
-  exports[`move:jts`],
 );
 
 exports[`build:pkg`] = gulp.series(
