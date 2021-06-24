@@ -48,8 +48,10 @@ export class ClassDependencyBuilder extends BaseDependencyBuilder {
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(dependencyKey);
 
       if (_.isNil(dependencyBuilder) === true) {
-        console.log(this.classDependency, dependencyKey);
-        throw new Error(`Constructor dependency (${dependencyIndex}) not found!`);
+        throw new Error(`Class Dependency. Dependency in constructor not found! `
+          + `Class: "${this.classDependency.name}". `
+          + `Index: ${dependencyIndex}. `
+          + `Dependency: "${Helper.getDependencyName(dependencyKey)}".`);
       }
 
       const dependencyInst = await dependencyBuilder.get();
@@ -71,7 +73,10 @@ export class ClassDependencyBuilder extends BaseDependencyBuilder {
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(properyDependency.dependencyKey);
 
       if (_.isNil(dependencyBuilder) === true) {
-        throw new Error(`Property dependency (${String(properyDependency.propertyName)}) not found!`);
+        throw new Error(`Class Dependency. Dependency in property not found! `
+          + `Class: "${this.classDependency.name}". `
+          + `Property: "${String(properyDependency.propertyName)}". `
+          + `Dependency: "${Helper.getDependencyName(properyDependency.dependencyKey)}".`);
       }
 
       const dependencyInst = await dependencyBuilder.get();
