@@ -5,7 +5,7 @@ import { Helper } from '../shared';
 
 export function Inject (
   token: Interfaces.DependencyKey,
-): PropertyDecorator | ParameterDecorator {
+): any {
   return (target: any, propertyKey: string | symbol, paramIndex?: number) => {
     const diKey = token ?? Reflect.getMetadata('design:type', target, propertyKey);
 
