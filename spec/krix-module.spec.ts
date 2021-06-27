@@ -50,7 +50,7 @@ describe(`KxModule`, () => {
   });
 
   describe(`Class dependency`, () => {
-    it(`should create an instance of Class dependency`, async () => {
+    it(`'create' should create a new instance`, async () => {
       @Dependency()
       class DependencyA {
       }
@@ -63,6 +63,85 @@ describe(`KxModule`, () => {
 
       const dependencyA = await kxModule.create(DependencyA);
       expect(dependencyA).to.be.an.instanceOf(DependencyA);
+    });
+
+    it(`two 'create' should return 2 different instance of dependency`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+      });
+
+      const dependencyCreateA1 = await kxModule.create(DependencyA);
+      const dependencyCreateA2 = await kxModule.create(DependencyA);
+      expect(dependencyCreateA1).not.to.be.equal(dependencyCreateA2);
+    });
+
+    it(`'get' should create a new instance and return it`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+      });
+
+      const dependencyA = await kxModule.get(DependencyA);
+      expect(dependencyA).to.be.an.instanceOf(DependencyA);
+    });
+
+    it(`two 'get' should return one instance (singleton)`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+      });
+
+      const dependencyGetA1 = await kxModule.get(DependencyA);
+      const dependencyGetA2 = await kxModule.get(DependencyA);
+      expect(dependencyGetA1).to.be.equal(dependencyGetA2);
+    });
+
+    it(`two 'get' should return two different instances (non-singleton)`, async () => {
+      @Dependency({ singletone: false })
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+      });
+
+      const dependencyGetA1 = await kxModule.get(DependencyA);
+      const dependencyGetA2 = await kxModule.get(DependencyA);
+      expect(dependencyGetA1).not.to.be.equal(dependencyGetA2);
+    });
+
+    it(`'create' should return a new instance which doesn't equal instance from 'get'`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+      });
+
+      const dependencyGetA = await kxModule.get(DependencyA);
+      const dependencyCreateA = await kxModule.create(DependencyA);
+      expect(dependencyCreateA).not.to.be.equal(dependencyGetA);
     });
 
     it(`should create a Class dependency with constructor dependency`, async () => {
@@ -220,22 +299,6 @@ describe(`KxModule`, () => {
       expect(testError).not.to.be.undefined;
       expect(testError.message).to.be.equal(`Class Dependency. Constructor doesn't support native types! Class: "MainDependency". Index: 0. Dependency: "string".`);
     });
-  });
-
-
-  it(`should get an instance of Class dependency`, async () => {
-    @Dependency()
-    class DependencyA {
-    }
-
-    const kxModule = KxModule.init({
-      dependencies: [
-        DependencyA,
-      ],
-    });
-
-    const dependencyA = await kxModule.get(DependencyA);
-    expect(dependencyA).to.be.an.instanceOf(DependencyA);
   });
 
   it(`should get an instance of UseClass dependency`, async () => {
