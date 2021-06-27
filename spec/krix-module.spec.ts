@@ -443,19 +443,85 @@ describe(`KxModule`, () => {
     });
   });
 
+  describe(`UseValue dependency`, () => {
+    it(`'create' should return the provided value`, async () => {
+      const depKey = `UseValueDependency`;
+      const dependency = { value: 'Hello World' };
 
-  it(`should get an instance of UseValue dependency`, async () => {
-    const depKey = `UseValueDependency`;
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: depKey, useValue: dependency },
+        ],
+      });
 
-    const kxModule = KxModule.init({
-      dependencies: [
-        { dependencyKey: depKey, useValue: 48 },
-      ],
+      const useValueDependency = await kxModule.create(depKey);
+      expect(useValueDependency).to.equal(dependency);
     });
 
-    const useValueDependency = await kxModule.get(depKey);
-    expect(useValueDependency).to.equal(48);
+    it(`two 'create' should return the same provided value`, async () => {
+      const depKey = `UseValueDependency`;
+      const dependency = { value: 'Hello World' };
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: depKey, useValue: dependency },
+        ],
+      });
+
+      const useValueDependencyCreate1 = await kxModule.create(depKey);
+      const useValueDependencyCreate2 = await kxModule.create(depKey);
+      expect(useValueDependencyCreate1).to.equal(dependency);
+      expect(useValueDependencyCreate1).to.equal(useValueDependencyCreate2);
+    });
+
+    it(`'get' should return the provided value`, async () => {
+      const depKey = `UseValueDependency`;
+      const dependency = { value: 'Hello World' };
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: depKey, useValue: dependency },
+        ],
+      });
+
+      const useValueDependencyCreate = await kxModule.get(depKey);
+      expect(useValueDependencyCreate).to.equal(dependency);
+    });
+
+    it(`two 'get' should return the same provided value`, async () => {
+      const depKey = `UseValueDependency`;
+      const dependency = { value: 'Hello World' };
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: depKey, useValue: dependency },
+        ],
+      });
+
+      const useValueDependencyGet1 = await kxModule.get(depKey);
+      const useValueDependencyGet2 = await kxModule.get(depKey);
+      expect(useValueDependencyGet1).to.equal(dependency);
+      expect(useValueDependencyGet1).to.equal(useValueDependencyGet2);
+    });
+
+    it(`'create' should return the same value as 'get'`, async () => {
+      const depKey = `UseValueDependency`;
+      const dependency = { value: 'Hello World' };
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: depKey, useValue: dependency },
+        ],
+      });
+
+      const useValueDependencyCreate = await kxModule.create(depKey);
+      const useValueDependencyGet = await kxModule.get(depKey);
+      expect(useValueDependencyCreate).to.equal(dependency);
+      expect(useValueDependencyGet).to.equal(dependency);
+      expect(useValueDependencyCreate).to.equal(useValueDependencyGet);
+    });
   });
+
 
   it(`should get an instance of UseFactoryClass dependency`, async () => {
     @Dependency()
