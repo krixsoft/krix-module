@@ -301,19 +301,148 @@ describe(`KxModule`, () => {
     });
   });
 
-  it(`should get an instance of UseClass dependency`, async () => {
-    class DependencyA {
-    }
+  describe(`UseClass dependency`, () => {
+    it(`'create' should create a new instance`, async () => {
+      class DependencyA {
+      }
 
-    const kxModule = KxModule.init({
-      dependencies: [
-        { dependencyKey: DependencyA, useClass: DependencyA },
-      ],
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: DependencyA, useClass: DependencyA },
+        ],
+      });
+
+      const dependencyA = await kxModule.create(DependencyA);
+      expect(dependencyA).to.be.an.instanceOf(DependencyA);
     });
 
-    const dependencyA = await kxModule.get(DependencyA);
-    expect(dependencyA).to.be.an.instanceOf(DependencyA);
+    it(`two 'create' should return 2 different instance of dependency`, async () => {
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: DependencyA, useClass: DependencyA },
+        ],
+      });
+
+      const dependencyCreateA1 = await kxModule.create(DependencyA);
+      const dependencyCreateA2 = await kxModule.create(DependencyA);
+      expect(dependencyCreateA1).not.to.be.equal(dependencyCreateA2);
+    });
+
+    it(`'get' should create a new instance and return it`, async () => {
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: DependencyA, useClass: DependencyA },
+        ],
+      });
+
+      const dependencyA = await kxModule.get(DependencyA);
+      expect(dependencyA).to.be.an.instanceOf(DependencyA);
+    });
+
+    it(`two 'get' should return one instance (singleton)`, async () => {
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: DependencyA, useClass: DependencyA },
+        ],
+      });
+
+      const dependencyGetA1 = await kxModule.get(DependencyA);
+      const dependencyGetA2 = await kxModule.get(DependencyA);
+      expect(dependencyGetA1).to.be.equal(dependencyGetA2);
+    });
+
+    it(`two 'get' should return two different instances (non-singleton)`, async () => {
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: DependencyA, useClass: DependencyA, singletone: false },
+        ],
+      });
+
+      const dependencyGetA1 = await kxModule.get(DependencyA);
+      const dependencyGetA2 = await kxModule.get(DependencyA);
+      expect(dependencyGetA1).not.to.be.equal(dependencyGetA2);
+    });
+
+    it(`'create' should return a new instance which doesn't equal instance from 'get'`, async () => {
+      class DependencyA {
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: DependencyA, useClass: DependencyA },
+        ],
+      });
+
+      const dependencyGetA = await kxModule.get(DependencyA);
+      const dependencyCreateA = await kxModule.create(DependencyA);
+      expect(dependencyCreateA).not.to.be.equal(dependencyGetA);
+    });
+
+    it(`should create a UseClass dependency with constructor dependency`, async () => {
+      @Dependency()
+      class SubDependency {
+      }
+      class MainDependency {
+        constructor (
+          public subDependency: SubDependency,
+        ) {}
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: MainDependency, useClass: MainDependency, dependencies: [ SubDependency ] },
+          SubDependency,
+        ],
+      });
+
+      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      expect(mainDependency).to.be.an.instanceOf(MainDependency);
+      expect(mainDependency.subDependency).not.to.be.undefined;
+    });
+
+    it(`shouldn't throw an error if dependency from constructor isn't provided in module definition`, async () => {
+      @Dependency()
+      class SubDependency {
+      }
+      class MainDependency {
+        constructor (
+          public subDependency: SubDependency,
+        ) {}
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          { dependencyKey: MainDependency, useClass: MainDependency },
+          SubDependency,
+        ],
+      });
+
+      let testError: Error;
+      let mainDependency: MainDependency;
+      try {
+        mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).to.be.undefined;
+      expect(mainDependency).to.be.an.instanceOf(MainDependency);
+      expect(mainDependency.subDependency).to.be.undefined;
+    });
   });
+
 
   it(`should get an instance of UseValue dependency`, async () => {
     const depKey = `UseValueDependency`;
