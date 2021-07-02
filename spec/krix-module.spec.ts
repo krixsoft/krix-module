@@ -659,7 +659,7 @@ describe(`KxModule`, () => {
       expect(useFactoryFunctionDependency).to.be.equal(factoryValue);
     });
 
-    it(`should create a UseClass dependency with constructor dependency`, async () => {
+    it(`should create a dependency with constructor dependency`, async () => {
       const initialSubDependencyValue = {};
       @Dependency()
       class SubDependency {
@@ -737,41 +737,271 @@ describe(`KxModule`, () => {
     });
   });
 
-  it(`should get an instance of UseFactoryClass dependency`, async () => {
-    @Dependency()
-    class FactoryClass implements Interfaces.FactoryDependencyClass {
-      async build (): Promise<number> {
-        return 48;
+  describe(`UseFactoryClass dependency`, () => {
+    it(`'create' should create a new instance`, async () => {
+      const depKey = `UseFactoryClassDependency`;
+      const factoryValue = {};
+
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        build () {
+          return factoryValue;
+        }
       }
-    }
-    const depKey = `UseFactoryClassDependency`;
 
-    const kxModule = KxModule.init({
-      dependencies: [
-        { dependencyKey: depKey, useFactoryClass: FactoryClass },
-      ],
-    });
-
-    const useValueDependency = await kxModule.get(depKey);
-    expect(useValueDependency).to.equal(48);
-  });
-
-  it(`should get an instance of UseFactoryFunction dependency`, async () => {
-    const depKey = `UseFactoryFunctionDependency`;
-
-    const kxModule = KxModule.init({
-      dependencies: [
-        {
-          dependencyKey: depKey,
-          useFactoryFunction: () => {
-            return 48;
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
           },
-        },
-      ],
+        ],
+      });
+
+      const useFactoryClassDependency = await kxModule.create(depKey);
+      expect(useFactoryClassDependency).to.be.equal(factoryValue);
     });
 
-    const useValueDependency = await kxModule.get(depKey);
-    expect(useValueDependency).to.equal(48);
+    it(`two 'create' should return 2 different instance of dependency`, async () => {
+      const depKey = `UseFactoryClassDependency`;
+
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        build () {
+          const factoryValue = {};
+          return factoryValue;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+          },
+        ],
+      });
+
+      const useFactoryClassDependency1 = await kxModule.create(depKey);
+      const useFactoryClassDependency2 = await kxModule.create(depKey);
+      expect(useFactoryClassDependency1).not.to.be.equal(useFactoryClassDependency2);
+    });
+
+    it(`'get' should create a new instance and return it`, async () => {
+      const depKey = `UseFactoryClassDependency`;
+
+      const factoryValue = {};
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        build () {
+          return factoryValue;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+          },
+        ],
+      });
+
+      const useFactoryClassDependency = await kxModule.get(depKey);
+      expect(useFactoryClassDependency).to.be.equal(factoryValue);
+    });
+
+    it(`two 'get' should return one instance (singleton)`, async () => {
+      const depKey = `UseFactoryClassDependency`;
+
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        build () {
+          const factoryValue = {};
+          return factoryValue;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+          },
+        ],
+      });
+
+      const useFactoryClassDependency1 = await kxModule.get(depKey);
+      const useFactoryClassDependency2 = await kxModule.get(depKey);
+      expect(useFactoryClassDependency1).to.be.equal(useFactoryClassDependency2);
+    });
+
+    it(`two 'get' should return two different instances (non-singleton)`, async () => {
+      const depKey = `UseFactoryClassDependency`;
+
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        build () {
+          const factoryValue = {};
+          return factoryValue;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+            singletone: false,
+          },
+        ],
+      });
+
+      const useFactoryClassDependency1 = await kxModule.get(depKey);
+      const useFactoryClassDependency2 = await kxModule.get(depKey);
+      expect(useFactoryClassDependency1).not.to.be.equal(useFactoryClassDependency2);
+    });
+
+    it(`'create' should return a new instance which doesn't equal instance from 'get'`, async () => {
+      const depKey = `UseFactoryClassDependency`;
+
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        build () {
+          const factoryValue = {};
+          return factoryValue;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+          },
+        ],
+      });
+
+      const useFactoryClassCreate = await kxModule.create(depKey);
+      const useFactoryClassGet = await kxModule.get(depKey);
+      expect(useFactoryClassCreate).not.to.be.equal(useFactoryClassGet);
+    });
+
+    it(`should create an async dependency`, async () => {
+      const depKey = `UseFactoryClassDependency`;
+
+      const factoryValue = 42;
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        async build () {
+          const factoryValueResult = await Promise.resolve(factoryValue);
+          return factoryValueResult;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+          },
+        ],
+      });
+
+      const useFactoryClassDependency = await kxModule.create(depKey);
+      expect(useFactoryClassDependency).to.be.equal(factoryValue);
+    });
+
+    it(`should create a factory class dependency with constructor dependency`, async () => {
+      const initialSubDependencyValue = {};
+      @Dependency()
+      class SubDependency {
+        getValue () {
+          return initialSubDependencyValue;
+        }
+      }
+
+      interface UseFactoryResult {
+        value: object;
+      }
+
+      const depKey = `UseFactoryClassDependency`;
+
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        constructor (
+          public subDependency: SubDependency,
+        ) {
+        }
+
+        build (): UseFactoryResult {
+          const subDependencyValue = this.subDependency.getValue();
+          const factoryValue = { value: subDependencyValue };
+          return factoryValue;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+          },
+          SubDependency,
+        ],
+      });
+
+      const useFactoryFunctionDependency = await kxModule.create<UseFactoryResult>(depKey);
+      expect(useFactoryFunctionDependency.value).to.be.equal(initialSubDependencyValue);
+    });
+
+    it(`should throw an error if dependency in constructor of factory class isn't provided in module definition`, async () => {
+      const initialSubDependencyValue = {};
+      @Dependency()
+      class SubDependency {
+        getValue () {
+          return initialSubDependencyValue;
+        }
+      }
+
+      interface UseFactoryResult {
+        value: object;
+      }
+
+      const depKey = `UseFactoryClassDependency`;
+
+      @Dependency()
+      class FactoryClass implements Interfaces.FactoryClassDependency {
+        constructor (
+          public subDependency: SubDependency,
+        ) {
+        }
+
+        build (): UseFactoryResult {
+          const subDependencyValue = this.subDependency.getValue();
+          const factoryValue = { value: subDependencyValue };
+          return factoryValue;
+        }
+      }
+
+      const kxModule = KxModule.init({
+        dependencies: [
+          {
+            dependencyKey: depKey,
+            useFactoryClass: FactoryClass,
+          },
+        ],
+      });
+
+      let testError: Error;
+      try {
+        await kxModule.create<UseFactoryResult>(depKey);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError.message).to.be.equal(`Class Dependency. Dependency in constructor not found! Dependency: "FactoryClass". Index: 0. Provided dependency: "SubDependency".`);
+    });
   });
 
   it(`should get an instance of UseExisting dependency`, async () => {
@@ -792,38 +1022,6 @@ describe(`KxModule`, () => {
     const dependencyA = await kxModule.get(DependencyB);
     expect(dependencyA).not.to.be.an.instanceOf(DependencyB);
     expect(dependencyA).to.be.an.instanceOf(DependencyA);
-  });
-
-  it(`should get 2 the instance of one singleton Class dependency and they must be equal`, async () => {
-    @Dependency()
-    class MainDependency {
-    }
-
-    const kxModule = KxModule.init({
-      dependencies: [
-        MainDependency,
-      ],
-    });
-
-    const mainDependencyGet1 = await kxModule.get(MainDependency);
-    const mainDependencyGet2 = await kxModule.get(MainDependency);
-    expect(mainDependencyGet1).to.be.equal(mainDependencyGet2);
-  });
-
-  it(`should get 2 the instance of one non-singleton Class dependency and they mustn't be equal`, async () => {
-    @Dependency({ singletone: false })
-    class MainDependency {
-    }
-
-    const kxModule = KxModule.init({
-      dependencies: [
-        MainDependency,
-      ],
-    });
-
-    const mainDdependencyGet1 = await kxModule.get(MainDependency);
-    const mainDependencyGet2 = await kxModule.get(MainDependency);
-    expect(mainDdependencyGet1).not.to.be.equal(mainDependencyGet2);
   });
 
   it(`should: M->S. Get: M. M.S isn't an undefined`, async () => {
