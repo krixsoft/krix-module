@@ -96,9 +96,9 @@ export class Helper {
 
       if (this.isNativeType(costructorParamValue) === true) {
         throw new Error(`Class Dependency. Constructor doesn't support native types! `
-          + `Class: "${dependencyClass.name}". `
+          + `Dependency: "${dependencyClass.name}". `
           + `Index: ${costructorParamIndex}. `
-          + `Dependency: "${Helper.getDependencyName(costructorParamValue.name)}".`);
+          + `Provided dependency: "${Helper.getDependencyName(costructorParamValue.name)}".`);
       }
 
       return costructorParamValue;

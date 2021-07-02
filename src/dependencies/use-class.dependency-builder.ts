@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 
 import type { Interfaces } from '../shared';
+import { Helper } from '../shared';
 
 import { BaseDependencyBuilder } from './base-dependency-builder';
 
@@ -43,7 +44,10 @@ export class UseClassDependencyBuilder extends BaseDependencyBuilder {
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(dependencyKey);
 
       if (_.isNil(dependencyBuilder) === true) {
-        throw new Error(`Dependency (${dependencyIndex}) not found!`);
+        throw new Error(`UseClass Dependency. Provided dependency not found! `
+          + `Dependency: "${Helper.getDependencyName(this.useClassDependency.dependencyKey)}". `
+          + `Index: ${dependencyIndex}. `
+          + `Provided dependency: "${Helper.getDependencyName(dependencyKey)}".`);
       }
 
       const dependencyInst = await dependencyBuilder.get();
