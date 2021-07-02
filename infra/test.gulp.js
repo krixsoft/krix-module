@@ -29,21 +29,9 @@ exports[`test:watch`] = gulp.series(
   exports[`build:test`],
   exports[`build:pkg`],
   exports[`test:start`],
-  gulp.parallel(
-    function buildSpecWatch () {
-      return gulp.watch([
-        `${specFolder}/**/*.ts`,
-      ], gulp.series(exports[`build:test`]));
-    },
-    function buildSrcWatch () {
-      return gulp.watch([
-        `${srcFolder}/**/*.ts`,
-      ], gulp.series(exports[`build:pkg`]));
-    },
-    function testStartWatch () {
-      return gulp.watch([
-        `${distFolder}/**/*.js`,
-      ], gulp.series(exports[`test:start`]));
-    },
-  ),
+  function buildSpecWatch () {
+    gulp.watch([ `${specFolder}/**/*.ts` ], gulp.series(exports[`build:test`]));
+    gulp.watch([ `${srcFolder}/**/*.ts` ], gulp.series(exports[`build:pkg`]));
+    gulp.watch([ `${distFolder}/**/*.js` ], gulp.series(exports[`test:start`]));
+  },
 );
