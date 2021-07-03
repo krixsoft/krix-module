@@ -154,10 +154,7 @@ export interface ModuleConfig {
 }
 
 
-export interface ExternalDependency {
-  dependencyKey: DependencyKey;
-  value: any;
-}
+export type ExternalDependency = UseValueDependency | UseExistingDependency;
 
 export interface DependencyClassProperty {
   propertyName: PropertyKey;

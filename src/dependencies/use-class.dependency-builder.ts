@@ -36,9 +36,9 @@ export class UseClassDependencyBuilder extends BaseDependencyBuilder {
     // Get all dependencies for the UseClass instance
     const dependencyList = this.useClassDependency.dependencies;
     const constructorDepsInstsPr = _.map(dependencyList, async (dependencyKey, dependencyIndex) => {
-      const externalDependency = _.find(extDeps, [ 'dependencyKey', dependencyKey ]);
+      const externalDependency = await this.getExternalDependency(dependencyKey, extDeps);
       if (_.isNil(externalDependency) === false) {
-        return externalDependency.value;
+        return externalDependency;
       }
 
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(dependencyKey);

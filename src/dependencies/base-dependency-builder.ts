@@ -21,6 +21,40 @@ export abstract class BaseDependencyBuilder {
   }
 
   /**
+   * Finds the dependency in the list of external dependencies. External dependency can be of two types.
+   * UseValue external dependency will be returned as it is.
+   * UseExisting external dependency will get the dependency builder and call `get` logic to get an instance
+   * of dependency.
+   *
+   * @param  {Interfaces.DependencyKey} dependencyKey
+   * @param  {Interfaces.ExternalDependency[]} externalDependencies
+   * @return {Promise<any>}
+   */
+  async getExternalDependency (
+    dependencyKey: Interfaces.DependencyKey,
+    externalDependencies: Interfaces.ExternalDependency[],
+  ): Promise<any> {
+    if (_.isEmpty(externalDependencies) === true) {
+      return null;
+    }
+    const externalDependency = _.find(externalDependencies, [ 'dependencyKey', dependencyKey ]);
+
+    if (_.isNil(externalDependency) === true) {
+      return null;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(externalDependency, 'useValue') === true) {
+      return (externalDependency as Interfaces.UseValueDependency).useValue;
+    }
+
+    const existingDependency = (externalDependency as Interfaces.UseExistingDependency).useExisting;
+    const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(existingDependency);
+    const dependencyInst = await dependencyBuilder.get();
+
+    return dependencyInst;
+  }
+
+  /**
    * Creates a new instance of the dependency.
    *
    * @abstract

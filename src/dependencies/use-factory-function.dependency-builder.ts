@@ -36,9 +36,9 @@ export class UseFactoryFunctionDependencyBuilder extends BaseDependencyBuilder {
     // Get all dependencies for the factory function
     const dependencyList = this.useFactoryFunctionDependency.dependencies;
     const functionDepsInstsPr = _.map(dependencyList, async (dependencyKey, dependencyIndex) => {
-      const externalDependency = _.find(extDeps, [ 'dependencyKey', dependencyKey ]);
+      const externalDependency = await this.getExternalDependency(dependencyKey, extDeps);
       if (_.isNil(externalDependency) === false) {
-        return externalDependency.value;
+        return externalDependency;
       }
 
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(dependencyKey);
