@@ -18,7 +18,7 @@ export class UseExistingDependencyBuilder extends BaseDependencyBuilder {
   ) {
     super();
 
-    this.dependencyIsSingleton = true;
+    this.dependencyIsSingleton = false;
   }
 
   /**
