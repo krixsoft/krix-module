@@ -100,8 +100,7 @@ export interface UseFactoryClassDependency extends Base {
  */
 export interface UseExistingDependency extends Base {
   /**
-   * Class with Krix Dependency decorator which will be used instead of a some
-   * dependency (dependencyKey).
+   * Defined dependency which will be used instead of another dependency (dependencyKey).
    */
   useExisting: DependencyKey;
 }
