@@ -102,6 +102,11 @@ export class KxModule {
     extDeps?: Interfaces.ExternalDependency[],
   ): Promise<TDependency> {
     const dependencyBuilder = this.moduleDependencyBuilderStorage.getDependencyBuilder(dependencyKey);
+    if (Helper.isNil(dependencyBuilder) === true) {
+      throw new Error(`Can't create the dependency: "${Helper.getDependencyName(dependencyKey)}". `
+        + `Dependency not found.`);
+    }
+
     const dependency = await dependencyBuilder.create(extDeps);
     return dependency;
   }
@@ -116,6 +121,11 @@ export class KxModule {
     dependencyKey: Interfaces.DependencyKey,
   ): Promise<TDependency> {
     const dependencyBuilder = this.moduleDependencyBuilderStorage.getDependencyBuilder(dependencyKey);
+    if (Helper.isNil(dependencyBuilder) === true) {
+      throw new Error(`Can't get the dependency: "${Helper.getDependencyName(dependencyKey)}". `
+        + `Dependency not found.`);
+    }
+
     const dependency = await dependencyBuilder.get();
     return dependency;
   }
