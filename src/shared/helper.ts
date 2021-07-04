@@ -139,4 +139,13 @@ export class Helper {
     return typeof dependencyKey;
   }
 
+  /**
+   * Checks if `value` is `null` or `undefined`.
+   *
+   * @param  {unknown} value
+   * @return {boolean}
+   */
+  static isNil (value: unknown): value is null {
+    return value === null || value === undefined;
+  }
 }
