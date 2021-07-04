@@ -1,7 +1,7 @@
 {
-  "name": "@krix/di",
+  "name": "@krix/module",
   "version": "6.0.0",
-  "description": "State Store",
+  "description": "Module library based on Dependency Injection pattern",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "repository": {
@@ -21,10 +21,11 @@
   },
   "keywords": [
     "krix",
-    "state",
-    "store",
-    "storage",
-    "state-store"
+    "module",
+    "di",
+    "di-module",
+    "dependency",
+    "dependency-injection"
   ],
   "authors": [
     {

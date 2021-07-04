@@ -38,7 +38,6 @@ And enable `experimentalDecorators` and `emitDecoratorMetadata` options in your 
 ```json
 {
   "compilerOptions": {
-    // other options...
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
