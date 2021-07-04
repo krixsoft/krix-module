@@ -55,8 +55,7 @@ export class DependencyBuilderStorage {
     dependencyKey: Interfaces.DependencyKey,
   ): void {
     if (this.mainDependencyBuilderStorage.has(dependencyKey) === false) {
-      throw new Error(`DependencyBuilderStorage.setExportDependency: `
-        + `Can't export non-existing dependency ${String(dependencyKey)}`);
+      throw new Error(`Can't export non-existing dependency: "${Helper.getDependencyName(dependencyKey)}".`);
     }
 
     this.exportDependenciesSet.add(dependencyKey);
@@ -73,8 +72,7 @@ export class DependencyBuilderStorage {
     checkExternal: boolean = false,
   ): BaseDependencyBuilder {
     if (checkExternal === true && this.exportDependenciesSet.has(dependencyKey) === false) {
-      throw new Error(`DependencyBuilderStorage.getDependencyBuilder: `
-        + `Module doesn't contain external dependency ${String(dependencyKey)}`);
+      return null;
     }
 
     const internalDependencyBuilder = this.mainDependencyBuilderStorage.get(dependencyKey);
