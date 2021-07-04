@@ -47,6 +47,62 @@ describe(`KxModule`, () => {
     expect(kxModule).to.be.an.instanceOf(KxModule);
   });
 
+  describe(`create/get`, () => {
+    it(`create should throw an error if dependency not found`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+      @Dependency()
+      class DependencyB {
+      }
+
+      const moduleA = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+        export: [
+          DependencyA,
+        ],
+      });
+
+      let testError: Error;
+      try {
+        await moduleA.create(DependencyB);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError.message).to.be.equal(`Can't create the dependency: "DependencyB". Dependency not found.`);
+    });
+
+    it(`get should throw an error if dependency not found`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+      @Dependency()
+      class DependencyB {
+      }
+
+      const moduleA = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+        export: [
+          DependencyA,
+        ],
+      });
+
+      let testError: Error;
+      try {
+        await moduleA.get(DependencyB);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError.message).to.be.equal(`Can't get the dependency: "DependencyB". Dependency not found.`);
+    });
+  });
+
   describe(`Class dependency`, () => {
     it(`'create' should create a new instance`, async () => {
       @Dependency()
