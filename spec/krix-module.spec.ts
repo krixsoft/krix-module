@@ -4,7 +4,6 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai';
 // import * as sinon from 'sinon';
-import * as _ from 'lodash';
 import 'reflect-metadata';
 
 import { Dependency, Inject } from '../dist/decorators';
