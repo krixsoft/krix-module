@@ -6,8 +6,7 @@ import { expect } from 'chai';
 // import * as sinon from 'sinon';
 import 'reflect-metadata';
 
-import { Dependency, Inject } from '../dist/decorators';
-import { KxModule } from '../dist/krix-module';
+import { KxModule, Dependency, Inject } from '../dist';
 import { Interfaces } from '../dist/shared';
 
 describe(`KxModule`, () => {
@@ -1628,6 +1627,170 @@ describe(`KxModule`, () => {
       }
 
       expect(testError.message).to.be.equal(`UseExisting Dependency. Existing dependency not found! Dependency: "DependencyA". Existing dependency: "DependencyB".`);
+    });
+  });
+
+  describe(`import/export`, () => {
+    it(`should create the module if dependency is provided both in the module defenition and the export section`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      let testError: Error;
+      try {
+        KxModule.init({
+          dependencies: [
+            DependencyA,
+          ],
+          export: [
+            DependencyA,
+          ],
+        });
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).to.be.undefined;
+    });
+
+    it(`should throw an error if export dependency isn't provided in module definition, but provided in the export section`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      let testError: Error;
+      try {
+        KxModule.init({
+          dependencies: [
+          ],
+          export: [
+            DependencyA,
+          ],
+        });
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError.message).to.be.equal(`Can't export non-existing dependency: "DependencyA".`);
+    });
+
+    it(`should create the dependency B if the dependency A is provided and exported in the another module`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      @Dependency()
+      class DependencyB {
+        constructor (
+          public dependencyA: DependencyA,
+        ) {}
+      }
+
+      const moduleA = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+        export: [
+          DependencyA,
+        ],
+      });
+
+      const moduleB = KxModule.init({
+        import: [
+          moduleA,
+        ],
+        dependencies: [
+          DependencyB,
+        ],
+      });
+
+      const dependencyB = await moduleB.get<DependencyB>(DependencyB);
+      expect(dependencyB).not.to.be.undefined;
+      expect(dependencyB.dependencyA).not.to.be.undefined;
+      expect(dependencyB.dependencyA).to.be.instanceOf(DependencyA);
+    });
+
+    it(`should throw an error if the dependency B requires the dependency A from another module, but dependency A isn't exported`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      @Dependency()
+      class DependencyB {
+        constructor (
+          public dependencyA: DependencyA,
+        ) {}
+      }
+
+      const moduleA = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+        export: [
+        ],
+      });
+
+      const moduleB = KxModule.init({
+        import: [
+          moduleA,
+        ],
+        dependencies: [
+          DependencyB,
+        ],
+      });
+
+      let testError: Error;
+      try {
+        await moduleB.get<DependencyB>(DependencyB);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError.message).to.be.equal(`Class Dependency. Dependency in constructor not found! Dependency: "DependencyB". Index: 0. Provided dependency: "DependencyA".`);
+    });
+
+    it(`should create the dependency B if the exported dependency A not found in the first imported module, but it's found in the second one`, async () => {
+      @Dependency()
+      class DependencyA {
+      }
+
+      @Dependency()
+      class DependencyB {
+        constructor (
+          public dependencyA: DependencyA,
+        ) {}
+      }
+
+      const moduleA = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+        export: [
+        ],
+      });
+      const moduleB = KxModule.init({
+        dependencies: [
+          DependencyA,
+        ],
+        export: [
+          DependencyA,
+        ],
+      });
+
+      const moduleC = KxModule.init({
+        import: [
+          moduleA,
+          moduleB,
+        ],
+        dependencies: [
+          DependencyB,
+        ],
+      });
+
+      const dependencyB = await moduleC.get<DependencyB>(DependencyB);
+      expect(dependencyB).not.to.be.undefined;
+      expect(dependencyB.dependencyA).not.to.be.undefined;
+      expect(dependencyB.dependencyA).to.be.instanceOf(DependencyA);
     });
   });
 });
