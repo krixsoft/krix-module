@@ -1,7 +1,6 @@
-import * as _ from 'lodash';
-
 import type { BaseDependencyBuilder } from './dependencies/base-dependency-builder';
 import { Interfaces } from './shared';
+import { Helper } from './shared';
 
 export class DependencyBuilderStorage {
   private externalDependencyBuilderStorages: DependencyBuilderStorage[];
@@ -79,13 +78,13 @@ export class DependencyBuilderStorage {
     }
 
     const internalDependencyBuilder = this.mainDependencyBuilderStorage.get(dependencyKey);
-    if (_.isNil(internalDependencyBuilder) === false) {
+    if (Helper.isNil(internalDependencyBuilder) === false) {
       return internalDependencyBuilder;
     }
 
     for (const externalDependencyBuilderStorage of this.externalDependencyBuilderStorages) {
       const externalDependencyBuilder = externalDependencyBuilderStorage.getDependencyBuilder(dependencyKey, true);
-      if (_.isNil(externalDependencyBuilder) === false) {
+      if (Helper.isNil(externalDependencyBuilder) === false) {
         return externalDependencyBuilder;
       }
     }

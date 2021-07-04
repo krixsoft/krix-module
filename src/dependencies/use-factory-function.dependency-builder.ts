@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import type { Interfaces } from '../shared';
 import { Helper } from '../shared';
 
@@ -35,15 +33,15 @@ export class UseFactoryFunctionDependencyBuilder extends BaseDependencyBuilder {
   ): Promise<any> {
     // Get all dependencies for the factory function
     const dependencyList = this.useFactoryFunctionDependency.dependencies;
-    const functionDepsInstsPr = _.map(dependencyList, async (dependencyKey, dependencyIndex) => {
+    const functionDepsInstsPr = (dependencyList ?? []).map(async (dependencyKey, dependencyIndex) => {
       const externalDependency = await this.getExternalDependency(dependencyKey, extDeps);
-      if (_.isNil(externalDependency) === false) {
+      if (Helper.isNil(externalDependency) === false) {
         return externalDependency;
       }
 
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(dependencyKey);
 
-      if (_.isNil(dependencyBuilder) === true) {
+      if (Helper.isNil(dependencyBuilder) === true) {
         throw new Error(`UseFactoryFunction Dependency. Provided dependency not found! `
           + `Dependency: "${Helper.getDependencyName(this.useFactoryFunctionDependency.dependencyKey)}". `
           + `Index: ${dependencyIndex}. `

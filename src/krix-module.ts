@@ -1,6 +1,5 @@
-import * as _ from 'lodash';
-
 import type { Interfaces } from './shared';
+import { Helper } from './shared';
 import { UseValueDependencyBuilder } from './dependencies/use-value.dependency-builder';
 import { DependencyBuilderStorage } from './dependency-builder.storage';
 import { DependencyBuilderFactory } from './dependency-builder.factory';
@@ -46,11 +45,11 @@ export class KxModule {
 
     // Create the dependency builder for every dependency in the list of dependencies and adds this
     // dependency builder to the module's dependency builder storage
-    _.forEach(this.moduleConfig.dependencies, (dependency) => {
+    (this.moduleConfig.dependencies ?? []).map((dependency) => {
       // FYI: Class dependency doesn't have dependencyKey
-      const dependencyKey = _.get(dependency, 'dependencyKey', dependency);
+      const dependencyKey = ((dependency as Interfaces.Base)?.dependencyKey ?? dependency) as Interfaces.DependencyKey;
 
-      if (_.isNil(dependencyKey) === true) {
+      if (Helper.isNil(dependencyKey) === true) {
         throw new Error(`Dependency must have a key!`);
       }
 
@@ -61,12 +60,12 @@ export class KxModule {
     });
 
     // Sets the export dependencies in module's storage
-    _.forEach(this.moduleConfig.export, (dependencyKey) => {
+    (this.moduleConfig.export ?? []).map((dependencyKey) => {
       this.moduleDependencyBuilderStorage.setExportDependency(dependencyKey);
     });
 
     // Iterate all external modules and set their DBS to the module's DBS as external DBS
-    _.forEach(this.moduleConfig.import, (externalKxModule) => {
+    (this.moduleConfig.import ?? []).map((externalKxModule) => {
       const externalDependencyBuilderMap = externalKxModule.getDependencyBuilderStorage();
 
       this.moduleDependencyBuilderStorage.addExternalDependencyBuilderStorage(externalDependencyBuilderMap);

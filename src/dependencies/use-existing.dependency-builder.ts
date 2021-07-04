@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import type { Interfaces } from '../shared';
 import { Helper } from '../shared';
 
@@ -33,7 +31,7 @@ export class UseExistingDependencyBuilder extends BaseDependencyBuilder {
     const useExistingDependencyBuilder = this.dependencyBuilderStorage
       .getDependencyBuilder(this.useExistingDependency.useExisting);
 
-    if (_.isNil(useExistingDependencyBuilder) === true) {
+    if (Helper.isNil(useExistingDependencyBuilder) === true) {
       throw new Error(`UseExisting Dependency. Existing dependency not found! `
         + `Dependency: "${Helper.getDependencyName(this.useExistingDependency.dependencyKey)}". `
         + `Existing dependency: "${Helper.getDependencyName(this.useExistingDependency.useExisting)}".`);

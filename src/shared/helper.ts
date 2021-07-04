@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import * as Constants from './constants';
 import * as Interfaces from './interfaces';
 
@@ -87,11 +85,13 @@ export class Helper {
     // Constructor params what were injectd via Inject decorator
     const injectedParams: Interfaces.DependencyConstructorParameter[] =
       Helper.getDependencyConstructorParameters(dependencyClass);
-    const injectedClassParams = _.map(costructorParams, (costructorParamValue: any, costructorParamIndex) => {
-      const injectedParam = _.find(injectedParams, [ 'index', costructorParamIndex ]);
+    const injectedClassParams = (costructorParams ?? []).map((costructorParamValue: any, costructorParamIndex) => {
+      const matchedInjectedParam = (injectedParams ?? []).find((injectedParam) => {
+        return injectedParam.index === costructorParamIndex;
+      });
 
-      if (_.isUndefined(injectedParam) === false) {
-        return injectedParam.value;
+      if (Helper.isNil(matchedInjectedParam) === false) {
+        return matchedInjectedParam.value;
       }
 
       if (this.isNativeType(costructorParamValue) === true) {
@@ -120,7 +120,7 @@ export class Helper {
    */
   static isNativeType (type: any): boolean {
     const types: any[] = [ String, Boolean, Number, Object ];
-    return _.includes(types, type);
+    return types.includes(type);
   }
 
   /**
@@ -132,7 +132,7 @@ export class Helper {
   static getDependencyName (
     dependencyKey: any,
   ): string {
-    if (typeof dependencyKey === 'function' && _.isNil(dependencyKey.constructor) === false) {
+    if (typeof dependencyKey === 'function' && Helper.isNil(dependencyKey.constructor) === false) {
         return dependencyKey.name;
     }
 

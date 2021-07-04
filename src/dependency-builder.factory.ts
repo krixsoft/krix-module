@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { ClassDependencyBuilder } from './dependencies/class.dependency-builder';
 import { UseClassDependencyBuilder } from './dependencies/use-class.dependency-builder';
 import { UseExistingDependencyBuilder } from './dependencies/use-existing.dependency-builder';
@@ -27,7 +25,7 @@ export class DependencyBuilderFactory {
   static buildDependencyBuilder (
     dependency: Interfaces.Dependency,
   ): DependencyBuilder {
-    if (_.isObject(dependency) === false) {
+    if (typeof dependency !== 'object' && typeof dependency !== 'function') {
       throw new Error(`Dependency must be an object.`);
     }
 

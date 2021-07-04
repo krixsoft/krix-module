@@ -1,6 +1,6 @@
-import * as _ from 'lodash';
 import { DependencyBuilderStorage } from '../dependency-builder.storage';
 import { Interfaces } from '../shared';
+import { Helper } from '../shared';
 
 export abstract class BaseDependencyBuilder {
   protected dependencyIsSingleton: boolean;
@@ -30,24 +30,23 @@ export abstract class BaseDependencyBuilder {
    * @param  {Interfaces.ExternalDependency[]} externalDependencies
    * @return {Promise<any>}
    */
-  async getExternalDependency (
+  protected async getExternalDependency (
     dependencyKey: Interfaces.DependencyKey,
     externalDependencies: Interfaces.ExternalDependency[],
   ): Promise<any> {
-    if (_.isEmpty(externalDependencies) === true) {
+    const matchedExternalDependency = (externalDependencies ?? []).find((externalDependency) => {
+      return externalDependency.dependencyKey === dependencyKey;
+    });
+
+    if (Helper.isNil(matchedExternalDependency) === true) {
       return null;
     }
-    const externalDependency = _.find(externalDependencies, [ 'dependencyKey', dependencyKey ]);
 
-    if (_.isNil(externalDependency) === true) {
-      return null;
+    if (Object.prototype.hasOwnProperty.call(matchedExternalDependency, 'useValue') === true) {
+      return (matchedExternalDependency as Interfaces.UseValueDependency).useValue;
     }
 
-    if (Object.prototype.hasOwnProperty.call(externalDependency, 'useValue') === true) {
-      return (externalDependency as Interfaces.UseValueDependency).useValue;
-    }
-
-    const existingDependency = (externalDependency as Interfaces.UseExistingDependency).useExisting;
+    const existingDependency = (matchedExternalDependency as Interfaces.UseExistingDependency).useExisting;
     const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(existingDependency);
     const dependencyInst = await dependencyBuilder.get();
 
@@ -73,7 +72,7 @@ export abstract class BaseDependencyBuilder {
    */
   async get (
   ): Promise<any> {
-    if (this.dependencyIsSingleton === true && _.isNil(this.inst) === false) {
+    if (this.dependencyIsSingleton === true && Helper.isNil(this.inst) === false) {
       return this.inst;
     }
 

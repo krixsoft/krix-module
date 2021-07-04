@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import type { Interfaces } from '../shared';
 import { Helper } from '../shared';
 
@@ -40,14 +38,14 @@ export class ClassDependencyBuilder extends BaseDependencyBuilder {
   ): Promise<any> {
     // Get all dependencies for the class instance
     const constructorDeps = this.classDescriptor.constructorDeps;
-    const constructorDepsInstsPr = _.map(constructorDeps, async (dependencyKey, dependencyIndex) => {
+    const constructorDepsInstsPr = (constructorDeps ?? []).map(async (dependencyKey, dependencyIndex) => {
       const externalDependency = await this.getExternalDependency(dependencyKey, extDeps);
-      if (_.isNil(externalDependency) === false) {
+      if (Helper.isNil(externalDependency) === false) {
         return externalDependency;
       }
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(dependencyKey);
 
-      if (_.isNil(dependencyBuilder) === true) {
+      if (Helper.isNil(dependencyBuilder) === true) {
         throw new Error(`Class Dependency. Dependency in constructor not found! `
           + `Dependency: "${this.classDependency.name}". `
           + `Index: ${dependencyIndex}. `
@@ -63,16 +61,16 @@ export class ClassDependencyBuilder extends BaseDependencyBuilder {
     const classDependencyInst = new this.classDependency(...constructorDepsInsts);
 
     // Get all dependencies for the instance properties and set them to the class instance
-    const propsDepsPr = _.map(this.classDescriptor.propsDeps, async (properyDependency) => {
+    const propsDepsPr = (this.classDescriptor.propsDeps ?? []).map(async (properyDependency) => {
       const externalDependency = await this.getExternalDependency(properyDependency.dependencyKey, extDeps);
-      if (_.isNil(externalDependency) === false) {
+      if (Helper.isNil(externalDependency) === false) {
         classDependencyInst[properyDependency.propertyName] = externalDependency;
         return;
       }
 
       const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(properyDependency.dependencyKey);
 
-      if (_.isNil(dependencyBuilder) === true) {
+      if (Helper.isNil(dependencyBuilder) === true) {
         throw new Error(`Class Dependency. Dependency in property not found! `
           + `Dependency: "${this.classDependency.name}". `
           + `Property: "${String(properyDependency.propertyName)}". `
