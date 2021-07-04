@@ -20,6 +20,7 @@ exports[`pkg:update-main`] = function pkgUpdateMainInPackageJSON () {
     `../package.json`,
   ])
     .pipe(replace(/\.\/dist\/index\.js/g, './index.js'))
+    .pipe(replace(/\.\/dist\/index\.d\.ts/g, './index.d.ts'))
     .pipe(gulp.dest(`${distFolder}`));
 };
 
