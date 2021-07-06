@@ -1,6 +1,6 @@
 {
   "name": "@krix/module",
-  "version": "6.0.0",
+  "version": "1.0.0",
   "description": "Module library based on Dependency Injection pattern",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
