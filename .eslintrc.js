@@ -66,6 +66,7 @@ module.exports =  {
     '@typescript-eslint/no-unnecessary-qualifier': 'warn',
     'semi': 'off',
     '@typescript-eslint/semi': [ 'warn' ],
+    '@typescript-eslint/no-unsafe-argument': 'off',
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
