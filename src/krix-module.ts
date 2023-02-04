@@ -97,8 +97,8 @@ export class KxModule {
    * @param  {Interfaces.ExternalDependency[]} extDeps
    * @return {Promise<TDependency>}
    */
-  async create <TDependency> (
-    dependencyKey: Interfaces.DependencyKey,
+  async create <TDependency = any> (
+    dependencyKey: Interfaces.ClassDependency<TDependency> | string | symbol,
     extDeps?: Interfaces.ExternalDependency[],
   ): Promise<TDependency> {
     const dependencyBuilder = this.moduleDependencyBuilderStorage.getDependencyBuilder(dependencyKey);
@@ -117,8 +117,8 @@ export class KxModule {
    * @param  {Interfaces.DependencyKey} dependencyKey
    * @return {Promise<TDependency>}
    */
-  async get <TDependency> (
-    dependencyKey: Interfaces.DependencyKey,
+  async get <TDependency = any> (
+    dependencyKey: Interfaces.ClassDependency<TDependency> | string | symbol,
   ): Promise<TDependency> {
     const dependencyBuilder = this.moduleDependencyBuilderStorage.getDependencyBuilder(dependencyKey);
     if (Helper.isNil(dependencyBuilder) === true) {

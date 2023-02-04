@@ -69,7 +69,7 @@ describe(`KxModule`, () => {
       try {
         await moduleA.create(DependencyB);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`Can't create the dependency: "DependencyB". Dependency not found.`);
@@ -96,7 +96,7 @@ describe(`KxModule`, () => {
       try {
         await moduleA.get(DependencyB);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`Can't get the dependency: "DependencyB". Dependency not found.`);
@@ -216,7 +216,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency = await kxModule.create(MainDependency);
       expect(mainDependency).to.be.an.instanceOf(MainDependency);
       expect(mainDependency.subDependency).not.to.be.undefined;
     });
@@ -240,7 +240,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency = await kxModule.create(MainDependency);
       expect(mainDependency).to.be.an.instanceOf(MainDependency);
       expect(mainDependency.subDependency).not.to.be.undefined;
     });
@@ -266,7 +266,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency = await kxModule.create(MainDependency);
       expect(mainDependency).to.be.an.instanceOf(MainDependency);
       expect(mainDependency.subDependency).not.to.be.undefined;
     });
@@ -290,9 +290,9 @@ describe(`KxModule`, () => {
 
       let testError: Error;
       try {
-        await kxModule.create<MainDependency>(MainDependency);
+        await kxModule.create(MainDependency);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError).not.to.be.undefined;
@@ -320,9 +320,9 @@ describe(`KxModule`, () => {
 
       let testError: Error;
       try {
-        await kxModule.create<MainDependency>(MainDependency);
+        await kxModule.create(MainDependency);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError).not.to.be.undefined;
@@ -345,9 +345,9 @@ describe(`KxModule`, () => {
           ],
         });
 
-        await kxModule.create<MainDependency>(MainDependency);
+        await kxModule.create(MainDependency);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError).not.to.be.undefined;
@@ -386,12 +386,12 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency1 = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency1 = await kxModule.create(MainDependency);
       expect(mainDependency1.subDependency).not.to.be.undefined;
       expect(mainDependency1.subDependency.test()).to.be.equal(subDependencyValue);
 
-      const externalSubDependency = await kxModule.create<ExternalSubDependency>(ExternalSubDependency);
-      const mainDependency2 = await kxModule.create<MainDependency>(MainDependency, [
+      const externalSubDependency = await kxModule.create(ExternalSubDependency);
+      const mainDependency2 = await kxModule.create(MainDependency, [
         {
           dependencyKey: SubDependency,
           useValue: externalSubDependency,
@@ -433,11 +433,11 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency1 = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency1 = await kxModule.create(MainDependency);
       expect(mainDependency1.subDependency).not.to.be.undefined;
       expect(mainDependency1.subDependency.test()).to.be.equal(subDependencyValue);
 
-      const mainDependency2 = await kxModule.create<MainDependency>(MainDependency, [
+      const mainDependency2 = await kxModule.create(MainDependency, [
         {
           dependencyKey: SubDependency,
           useExisting: ExternalSubDependency,
@@ -461,7 +461,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency = await kxModule.create(MainDependency);
       expect(mainDependency).to.be.an.instanceOf(MainDependency);
       expect(mainDependency.kxModule).not.to.be.undefined;
       expect(mainDependency.kxModule).to.be.an.instanceOf(KxModule);
@@ -574,7 +574,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency = await kxModule.create(MainDependency);
       expect(mainDependency).to.be.an.instanceOf(MainDependency);
       expect(mainDependency.subDependency).not.to.be.undefined;
     });
@@ -597,9 +597,9 @@ describe(`KxModule`, () => {
 
       let testError: Error;
       try {
-        await kxModule.create<MainDependency>(MainDependency);
+        await kxModule.create(MainDependency);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`UseClass Dependency. Provided dependency not found! Dependency: "MainDependency". Index: 0. Provided dependency: "SubDependency".`);
@@ -642,12 +642,12 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency1 = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency1 = await kxModule.create(MainDependency);
       expect(mainDependency1.subDependency).not.to.be.undefined;
       expect(mainDependency1.subDependency.test()).to.be.equal(subDependencyValue);
 
-      const externalSubDependency = await kxModule.create<ExternalSubDependency>(ExternalSubDependency);
-      const mainDependency2 = await kxModule.create<MainDependency>(MainDependency, [
+      const externalSubDependency = await kxModule.create(ExternalSubDependency);
+      const mainDependency2 = await kxModule.create(MainDependency, [
         {
           dependencyKey: SubDependency,
           useValue: externalSubDependency,
@@ -694,11 +694,11 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency1 = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency1 = await kxModule.create(MainDependency);
       expect(mainDependency1.subDependency).not.to.be.undefined;
       expect(mainDependency1.subDependency.test()).to.be.equal(subDependencyValue);
 
-      const mainDependency2 = await kxModule.create<MainDependency>(MainDependency, [
+      const mainDependency2 = await kxModule.create(MainDependency, [
         {
           dependencyKey: SubDependency,
           useExisting: ExternalSubDependency,
@@ -727,7 +727,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const mainDependency = await kxModule.create<MainDependency>(MainDependency);
+      const mainDependency = await kxModule.create(MainDependency);
       expect(mainDependency).to.be.an.instanceOf(MainDependency);
       expect(mainDependency.kxModule).not.to.be.undefined;
       expect(mainDependency.kxModule).to.be.an.instanceOf(KxModule);
@@ -1025,7 +1025,7 @@ describe(`KxModule`, () => {
       try {
         await kxModule.create<UseFactoryResult>(depKey);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`UseFactoryFunction Dependency. Provided dependency not found! Dependency: "string". Index: 0. Provided dependency: "SubDependency".`);
@@ -1068,7 +1068,7 @@ describe(`KxModule`, () => {
       const useFactoryFunctionDependency1 = await kxModule.create<number>(depKey);
       expect(useFactoryFunctionDependency1).to.be.equal(subDependencyValue);
 
-      const externalSubDependency = await kxModule.create<ExternalSubDependency>(ExternalSubDependency);
+      const externalSubDependency = await kxModule.create(ExternalSubDependency);
       const useFactoryFunctionDependency2 = await kxModule.create<number>(depKey, [
         {
           dependencyKey: SubDependency,
@@ -1409,7 +1409,7 @@ describe(`KxModule`, () => {
       try {
         await kxModule.create<UseFactoryResult>(depKey);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`Class Dependency. Dependency in constructor not found! Dependency: "FactoryClass". Index: 0. Provided dependency: "SubDependency".`);
@@ -1472,7 +1472,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const dependencyA = await kxModule.create<DependencyA>(DependencyA);
+      const dependencyA = await kxModule.create(DependencyA);
       expect(dependencyA).to.be.an.instanceOf(DependencyB);
       expect(dependencyA.test()).to.be.equal(dependencyBValue);
     });
@@ -1530,7 +1530,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const dependencyA = await kxModule.get<DependencyA>(DependencyA);
+      const dependencyA = await kxModule.get(DependencyA);
       expect(dependencyA).to.be.an.instanceOf(DependencyB);
       expect(dependencyA.test()).to.be.equal(dependencyBValue);
     });
@@ -1679,7 +1679,7 @@ describe(`KxModule`, () => {
       try {
         await kxModule.create(DependencyA);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`UseExisting Dependency. Existing dependency not found! Dependency: "DependencyA". Existing dependency: "DependencyB".`);
@@ -1703,7 +1703,7 @@ describe(`KxModule`, () => {
           ],
         });
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError).to.be.undefined;
@@ -1724,7 +1724,7 @@ describe(`KxModule`, () => {
           ],
         });
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`Can't export non-existing dependency: "DependencyA".`);
@@ -1760,7 +1760,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const dependencyB = await moduleB.get<DependencyB>(DependencyB);
+      const dependencyB = await moduleB.get(DependencyB);
       expect(dependencyB).not.to.be.undefined;
       expect(dependencyB.dependencyA).not.to.be.undefined;
       expect(dependencyB.dependencyA).to.be.instanceOf(DependencyA);
@@ -1797,9 +1797,9 @@ describe(`KxModule`, () => {
 
       let testError: Error;
       try {
-        await moduleB.get<DependencyB>(DependencyB);
+        await moduleB.get(DependencyB);
       } catch (error) {
-        testError = error;
+        testError = error as Error;
       }
 
       expect(testError.message).to.be.equal(`Class Dependency. Dependency in constructor not found! Dependency: "DependencyB". Index: 0. Provided dependency: "DependencyA".`);
@@ -1843,7 +1843,7 @@ describe(`KxModule`, () => {
         ],
       });
 
-      const dependencyB = await moduleC.get<DependencyB>(DependencyB);
+      const dependencyB = await moduleC.get(DependencyB);
       expect(dependencyB).not.to.be.undefined;
       expect(dependencyB.dependencyA).not.to.be.undefined;
       expect(dependencyB.dependencyA).to.be.instanceOf(DependencyA);

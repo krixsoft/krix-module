@@ -3,9 +3,9 @@ import { KxModule } from '../krix-module';
 /**
  * Class with Krix Dependency decorator.
  */
-export interface ClassDependency extends Function {
+export interface ClassDependency<T = any> extends Function {
   // tslint:disable-next-line
-  new (...args: any[]): any;
+  new (...args: any[]): T;
 }
 
 export interface FactoryClassDependency {
