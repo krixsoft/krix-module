@@ -20,7 +20,7 @@ export class ClassDependencyBuilder extends BaseDependencyBuilder {
     super();
 
     this.config = Helper.getDependencyConfig(classDependency);
-    this.dependencyIsSingleton = this.config?.singletone !== false;
+    this.dependencyIsSingleton = this.config?.singleton !== false;
 
     this.classDescriptor = Helper.getClassDescriptor(classDependency);
   }
@@ -61,24 +61,24 @@ export class ClassDependencyBuilder extends BaseDependencyBuilder {
     const classDependencyInst = new this.classDependency(...constructorDepsInsts);
 
     // Get all dependencies for the instance properties and set them to the class instance
-    const propsDepsPr = (this.classDescriptor.propsDeps ?? []).map(async (properyDependency) => {
-      const externalDependency = await this.getExternalDependency(properyDependency.dependencyKey, extDeps);
+    const propsDepsPr = (this.classDescriptor.propsDeps ?? []).map(async (propertyDependency) => {
+      const externalDependency = await this.getExternalDependency(propertyDependency.dependencyKey, extDeps);
       if (Helper.isNil(externalDependency) === false) {
-        classDependencyInst[properyDependency.propertyName] = externalDependency;
+        classDependencyInst[propertyDependency.propertyName] = externalDependency;
         return;
       }
 
-      const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(properyDependency.dependencyKey);
+      const dependencyBuilder = this.dependencyBuilderStorage.getDependencyBuilder(propertyDependency.dependencyKey);
 
       if (Helper.isNil(dependencyBuilder) === true) {
         throw new Error(`Class Dependency. Dependency in property not found! `
           + `Dependency: "${this.classDependency.name}". `
-          + `Property: "${String(properyDependency.propertyName)}". `
-          + `Provided dependency: "${Helper.getDependencyName(properyDependency.dependencyKey)}".`);
+          + `Property: "${String(propertyDependency.propertyName)}". `
+          + `Provided dependency: "${Helper.getDependencyName(propertyDependency.dependencyKey)}".`);
       }
 
       const dependencyInst = await dependencyBuilder.get();
-      classDependencyInst[properyDependency.propertyName] = dependencyInst;
+      classDependencyInst[propertyDependency.propertyName] = dependencyInst;
     });
     await Promise.all(propsDepsPr);
 

@@ -167,7 +167,7 @@ describe(`KxModule`, () => {
     });
 
     it(`two 'get' should return two different instances (non-singleton)`, async () => {
-      @Dependency({ singletone: false })
+      @Dependency({ singleton: false })
       class DependencyA {
       }
 
@@ -533,7 +533,7 @@ describe(`KxModule`, () => {
 
       const kxModule = KxModule.init({
         dependencies: [
-          { dependencyKey: DependencyA, useClass: DependencyA, singletone: false },
+          { dependencyKey: DependencyA, useClass: DependencyA, singleton: false },
         ],
       });
 
@@ -903,7 +903,7 @@ describe(`KxModule`, () => {
               const factoryValue = {};
               return factoryValue;
             },
-            singletone: false,
+            singleton: false,
           },
         ],
       });
@@ -1264,7 +1264,7 @@ describe(`KxModule`, () => {
           {
             dependencyKey: depKey,
             useFactoryClass: FactoryClass,
-            singletone: false,
+            singleton: false,
           },
         ],
       });
@@ -1574,7 +1574,7 @@ describe(`KxModule`, () => {
       }
 
       const dependencyBValue = 51;
-      @Dependency({ singletone: false })
+      @Dependency({ singleton: false })
       class DependencyB {
         test (): number {
           return dependencyBValue;
@@ -1632,7 +1632,7 @@ describe(`KxModule`, () => {
       }
 
       const dependencyBValue = 51;
-      @Dependency({ singletone: false })
+      @Dependency({ singleton: false })
       class DependencyB {
         test (): number {
           return dependencyBValue;
@@ -1661,7 +1661,7 @@ describe(`KxModule`, () => {
       }
 
       const dependencyBValue = 51;
-      @Dependency({ singletone: false })
+      @Dependency({ singleton: false })
       class DependencyB {
         test (): number {
           return dependencyBValue;

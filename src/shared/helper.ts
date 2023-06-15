@@ -80,28 +80,28 @@ export class Helper {
   static getClassDescriptor (
     dependencyClass: Interfaces.ClassDependency,
   ): Interfaces.ClassDescriptor {
-    const costructorParams: any[] = Reflect.getMetadata(`design:paramtypes`, dependencyClass) ?? [];
+    const constructorParams: any[] = Reflect.getMetadata(`design:paramtypes`, dependencyClass) ?? [];
 
-    // Constructor params what were injectd via Inject decorator
+    // Constructor params what were injected via Inject decorator
     const injectedParams: Interfaces.DependencyConstructorParameter[] =
       Helper.getDependencyConstructorParameters(dependencyClass);
-    const injectedClassParams = (costructorParams ?? []).map((costructorParamValue: any, costructorParamIndex) => {
+    const injectedClassParams = (constructorParams ?? []).map((constructorParamValue: any, constructorParamIndex) => {
       const matchedInjectedParam = (injectedParams ?? []).find((injectedParam) => {
-        return injectedParam.index === costructorParamIndex;
+        return injectedParam.index === constructorParamIndex;
       });
 
       if (Helper.isNil(matchedInjectedParam) === false) {
         return matchedInjectedParam.value;
       }
 
-      if (this.isNativeType(costructorParamValue) === true) {
+      if (this.isNativeType(constructorParamValue) === true) {
         throw new Error(`Class Dependency. Constructor doesn't support native types! `
           + `Dependency: "${dependencyClass.name}". `
-          + `Index: ${costructorParamIndex}. `
-          + `Provided dependency: "${Helper.getDependencyName(costructorParamValue.name)}".`);
+          + `Index: ${constructorParamIndex}. `
+          + `Provided dependency: "${Helper.getDependencyName(constructorParamValue.name)}".`);
       }
 
-      return costructorParamValue;
+      return constructorParamValue;
     });
 
     const injectedProps: Interfaces.DependencyClassProperty[] =
